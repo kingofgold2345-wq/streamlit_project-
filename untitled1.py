@@ -1,134 +1,56 @@
 import streamlit as st
-import json
-import os
 
-# ---------- Setup ----------
-st.set_page_config(page_title="Ultimate App", page_icon="🔥", layout="wide")
+# ---------- PAGE ----------
+st.set_page_config(page_title="Profile App", page_icon="👤", layout="centered")
 
-DATA_FILE = "users.json"
+# ---------- TITLE ----------
+st.title("👤 Profile Creator")
+st.caption("Simple clean Streamlit app")
 
-# ---------- Load / Save ----------
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    return []
+st.divider()
 
-def save_data(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+# ---------- INPUTS ----------
+name = st.text_input("Name")
+age = st.number_input("Age", min_value=1, max_value=100, value=18)
+gender = st.selectbox("Gender", ["Male", "Female"])
 
-users = load_data()
+uploaded_file = st.file_uploader("Upload image (optional)", type=["png", "jpg", "jpeg"])
 
-# ---------- Session ----------
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-    st.session_state.user = None
+# ---------- BUTTON ----------
+if st.button("Create Profile 🚀"):
 
-# ---------- UI Style ----------
-st.markdown("""
-<style>
-.stButton>button {
-    background-color: #ff4b4b;
-    color: white;
-    border-radius: 10px;
-}
-</style>
-""", unsafe_allow_html=True)
+    if name.strip() == "":
+        st.error("Please enter your name")
+    else:
+        st.success("Profile created successfully!")
 
-# ---------- LOGIN ----------
-if not st.session_state.logged_in:
-    st.title("🔐 Login System")
+        # ---------- PROFILE CARD ----------
+        st.subheader("📌 Profile Summary")
 
-    username = st.text_input("👤 Username")
-    password = st.text_input("🔑 Password", type="password")
+        col1, col2 = st.columns([1, 2])
 
-    col1, col2 = st.columns(2)
-
-    # LOGIN
-    with col1:
-        if st.button("Login"):
-            for user in users:
-                if user["username"] == username and user["password"] == password:
-                    st.session_state.logged_in = True
-                    st.session_state.user = user
-                    st.success("✅ Logged in!")
-                    st.rerun()
-            st.error("❌ Wrong username or password")
-
-    # REGISTER
-    with col2:
-        if st.button("Register"):
-            if username and password:
-                users.append({
-                    "username": username,
-                    "password": password,
-                    "age": None,
-                    "gender": None
-                })
-                save_data(users)
-                st.success("🎉 Account created!")
+        with col1:
+            if uploaded_file:
+                st.image(uploaded_file, width=120)
             else:
-                st.warning("⚠️ Fill all fields")
+                st.image("https://cdn-icons-png.flaticon.com/512/847/847969.png", width=120)
 
-# ---------- MAIN APP ----------
-else:
-    st.sidebar.title("🔥 Menu")
-    choice = st.sidebar.radio("Go to", ["Profile", "Dashboard", "Logout"])
+        with col2:
+            st.write(f"**Name:** {name}")
+            st.write(f"**Age:** {age}")
+            st.write(f"**Gender:** {gender}")
 
-    # PROFILE
-    if choice == "Profile":
-        st.title("👤 Your Profile")
+        st.divider()
 
-        user = st.session_state.user
+        # ---------- SMART MESSAGE ----------
+        if age < 18:
+            st.info("🧒 You are still young — focus on learning.")
+        elif age < 30:
+            st.info("💪 Great age to build your future.")
+        else:
+            st.info("🌟 You have strong experience!")
 
-        age = st.slider("🎂 Age", 1, 100, user["age"] or 18)
-        gender = st.selectbox("🚻 Gender", ["male", "female"])
-
-        image = st.file_uploader("📸 Upload Image", type=["png", "jpg"])
-
-        if st.button("💾 Save Profile"):
-            user["age"] = age
-            user["gender"] = gender
-
-            save_data(users)
-            st.success("Saved!")
-
-            if image:
-                st.image(image, width=150)
-
-        # Smart message
-        if user["age"]:
-            if user["age"] < 18:
-                st.info("📚 Learning phase!")
-            elif user["age"] < 30:
-                st.info("💪 Build your future!")
-            else:
-                st.info("🌟 Strong experience!")
-
-    # DASHBOARD
-    elif choice == "Dashboard":
-        st.title("📊 Dashboard")
-
-        total_users = len(users)
-        males = sum(1 for u in users if u.get("gender") == "male")
-        females = sum(1 for u in users if u.get("gender") == "female")
-
-        col1, col2, col3 = st.columns(3)
-
-        col1.metric("👥 Users", total_users)
-        col2.metric("👦 Males", males)
-        col3.metric("👧 Females", females)
-
-        # Show all users
-        st.subheader("📋 Users Data")
-        st.write(users)
-
-    # LOGOUT
-    elif choice == "Logout":
-        st.session_state.logged_in = False
-        st.session_state.user = None
-        st.rerun()
+        st.balloons()
         
         
 
