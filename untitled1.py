@@ -1,30 +1,75 @@
 import streamlit as st
 
+# Page setup
+st.set_page_config(page_title="Smart Profile App", page_icon="🚀", layout="centered")
 
-st.set_page_config(page_title="Test App", page_icon="🎯")
+# Custom styling
+st.markdown("""
+    <style>
+        .main {
+            background-color: #f5f7fa;
+        }
+        .stButton>button {
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 10px;
+            padding: 10px 20px;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
+# Title
+st.title("🚀 Smart Profile App")
+st.write("املأ البيانات واضغط عرض النتيجة")
 
-st.title("🎯 Welcome App")
+# Sidebar
+st.sidebar.header("⚙️ Settings")
+show_effects = st.sidebar.checkbox("🎉 تشغيل المؤثرات", value=True)
 
-
+# Inputs
 name = st.text_input("👤 ادخل اسمك")
-age = st.number_input("🎂 ادخل عمرك", min_value=0, max_value=100, step=1)
-gender = st.selectbox("🚻 اختر النوع", ("male", "female"))
+age = st.slider("🎂 اختر عمرك", 1, 100, 18)
+gender = st.radio("🚻 النوع", ["male", "female"])
 
+# Image upload
+image = st.file_uploader("📸 ارفع صورتك (اختياري)", type=["png", "jpg", "jpeg"])
 
+# Button
 if st.button("✨ عرض النتيجة"):
-    if name == "":
-        st.warning("⚠️ من فضلك ادخل اسمك")
+    if not name:
+        st.error("⚠️ لازم تكتب اسمك!")
     else:
-        st.success(f"👋 اهلا بك {name}!")
+        st.success(f"👋 اهلا يا {name}!")
 
-        
+        # Show image if uploaded
+        if image:
+            st.image(image, caption="صورتك", width=150)
+
+        # Info
         st.write(f"🎂 عمرك: {age}")
         st.write(f"🚻 النوع: {gender}")
 
-        
-        st.balloons()
-        st.snow()
+        # Smart message
+        if age < 18:
+            st.info("📚 انت في سن التعلم والتطوير!")
+        elif age < 30:
+            st.info("💪 وقت تبني مستقبلك!")
+        else:
+            st.info("🌟 خبرة جميلة ما شاء الله!")
+
+        # Gender message
+        if gender == "male":
+            st.write("👦 منور يا بطل!")
+        else:
+            st.write("👧 منورة يا قمر!")
+
+        # Effects
+        if show_effects:
+            st.balloons()
+
+# Footer
+st.markdown("---")
+st.caption("Made by Malek 😎")
         
         
 
