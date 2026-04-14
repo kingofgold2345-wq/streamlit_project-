@@ -1,13 +1,26 @@
 import streamlit as st
 
-st.title("test")
+# Page config
+st.set_page_config(page_title="Test App", page_icon="🎯")
 
-name = st.text_input("ادخل اسمك")
-age = st.number_input("ادخل عمرك")
-gender = st.selectbox("ولد او بنت", ("male", "female"))
+# Title
+st.title("🎯 Welcome App")
 
-st.write("اهلا بك", name)
+# Inputs
+name = st.text_input("👤 ادخل اسمك")
+age = st.number_input("🎂 ادخل عمرك", min_value=0, max_value=100, step=1)
+gender = st.selectbox("🚻 اختر النوع", ("male", "female"))
 
-st.balloons()
+# Button
+if st.button("✨ عرض النتيجة"):
+    if name == "":
+        st.warning("⚠️ من فضلك ادخل اسمك")
+    else:
+        st.success(f"👋 اهلا بك {name}!")
 
-st.snow()
+        # Extra info
+        st.write(f"🎂 عمرك: {age}")
+        st.write(f"🚻 النوع: {gender}")
+
+        # Fun effect
+        st.balloons()
