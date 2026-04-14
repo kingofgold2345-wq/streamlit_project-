@@ -25,5 +25,6 @@ if st.button("✨ عرض النتيجة"):
         
         st.balloons()
         st.snow()
+        st.tree
 
 
