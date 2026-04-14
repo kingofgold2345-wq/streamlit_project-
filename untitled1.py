@@ -1,75 +1,134 @@
 import streamlit as st
+import json
+import os
 
-# Page setup
-st.set_page_config(page_title="Smart Profile App", page_icon="🚀", layout="centered")
+# ---------- Setup ----------
+st.set_page_config(page_title="Ultimate App", page_icon="🔥", layout="wide")
 
-# Custom styling
+DATA_FILE = "users.json"
+
+# ---------- Load / Save ----------
+def load_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+def save_data(data):
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
+users = load_data()
+
+# ---------- Session ----------
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+    st.session_state.user = None
+
+# ---------- UI Style ----------
 st.markdown("""
-    <style>
-        .main {
-            background-color: #f5f7fa;
-        }
-        .stButton>button {
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 10px;
-            padding: 10px 20px;
-        }
-    </style>
+<style>
+.stButton>button {
+    background-color: #ff4b4b;
+    color: white;
+    border-radius: 10px;
+}
+</style>
 """, unsafe_allow_html=True)
 
-# Title
-st.title("🚀 Smart Profile App")
-st.write("املأ البيانات واضغط عرض النتيجة")
+# ---------- LOGIN ----------
+if not st.session_state.logged_in:
+    st.title("🔐 Login System")
 
-# Sidebar
-st.sidebar.header("⚙️ Settings")
-show_effects = st.sidebar.checkbox("🎉 تشغيل المؤثرات", value=True)
+    username = st.text_input("👤 Username")
+    password = st.text_input("🔑 Password", type="password")
 
-# Inputs
-name = st.text_input("👤 ادخل اسمك")
-age = st.slider("🎂 اختر عمرك", 1, 100, 18)
-gender = st.radio("🚻 النوع", ["male", "female"])
+    col1, col2 = st.columns(2)
 
-# Image upload
-image = st.file_uploader("📸 ارفع صورتك (اختياري)", type=["png", "jpg", "jpeg"])
+    # LOGIN
+    with col1:
+        if st.button("Login"):
+            for user in users:
+                if user["username"] == username and user["password"] == password:
+                    st.session_state.logged_in = True
+                    st.session_state.user = user
+                    st.success("✅ Logged in!")
+                    st.rerun()
+            st.error("❌ Wrong username or password")
 
-# Button
-if st.button("✨ عرض النتيجة"):
-    if not name:
-        st.error("⚠️ لازم تكتب اسمك!")
-    else:
-        st.success(f"👋 اهلا يا {name}!")
+    # REGISTER
+    with col2:
+        if st.button("Register"):
+            if username and password:
+                users.append({
+                    "username": username,
+                    "password": password,
+                    "age": None,
+                    "gender": None
+                })
+                save_data(users)
+                st.success("🎉 Account created!")
+            else:
+                st.warning("⚠️ Fill all fields")
 
-        # Show image if uploaded
-        if image:
-            st.image(image, caption="صورتك", width=150)
+# ---------- MAIN APP ----------
+else:
+    st.sidebar.title("🔥 Menu")
+    choice = st.sidebar.radio("Go to", ["Profile", "Dashboard", "Logout"])
 
-        # Info
-        st.write(f"🎂 عمرك: {age}")
-        st.write(f"🚻 النوع: {gender}")
+    # PROFILE
+    if choice == "Profile":
+        st.title("👤 Your Profile")
+
+        user = st.session_state.user
+
+        age = st.slider("🎂 Age", 1, 100, user["age"] or 18)
+        gender = st.selectbox("🚻 Gender", ["male", "female"])
+
+        image = st.file_uploader("📸 Upload Image", type=["png", "jpg"])
+
+        if st.button("💾 Save Profile"):
+            user["age"] = age
+            user["gender"] = gender
+
+            save_data(users)
+            st.success("Saved!")
+
+            if image:
+                st.image(image, width=150)
 
         # Smart message
-        if age < 18:
-            st.info("📚 انت في سن التعلم والتطوير!")
-        elif age < 30:
-            st.info("💪 وقت تبني مستقبلك!")
-        else:
-            st.info("🌟 خبرة جميلة ما شاء الله!")
+        if user["age"]:
+            if user["age"] < 18:
+                st.info("📚 Learning phase!")
+            elif user["age"] < 30:
+                st.info("💪 Build your future!")
+            else:
+                st.info("🌟 Strong experience!")
 
-        # Gender message
-        if gender == "male":
-            st.write("👦 منور يا بطل!")
-        else:
-            st.write("👧 منورة يا قمر!")
+    # DASHBOARD
+    elif choice == "Dashboard":
+        st.title("📊 Dashboard")
 
-        # Effects
-        if show_effects:
-            st.balloons()
+        total_users = len(users)
+        males = sum(1 for u in users if u.get("gender") == "male")
+        females = sum(1 for u in users if u.get("gender") == "female")
 
-# Footer
-st.markdown("---")
-st.caption("Made by Malek 😎")
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric("👥 Users", total_users)
+        col2.metric("👦 Males", males)
+        col3.metric("👧 Females", females)
+
+        # Show all users
+        st.subheader("📋 Users Data")
+        st.write(users)
+
+    # LOGOUT
+    elif choice == "Logout":
+        st.session_state.logged_in = False
+        st.session_state.user = None
+        st.rerun()
         
         
 
