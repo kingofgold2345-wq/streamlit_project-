@@ -1,13 +1,12 @@
 import streamlit as st
 
-# ---------- PAGE SETUP ----------
 st.set_page_config(
     page_title="Profile App",
     page_icon="👤",
     layout="centered"
 )
 
-# ---------- HEADER ----------
+
 st.markdown("""
     <h1 style='text-align: center;'>👤 Profile Builder</h1>
     <p style='text-align: center; color: gray;'>Create a clean profile in seconds</p>
@@ -15,7 +14,7 @@ st.markdown("""
 
 st.divider()
 
-# ---------- INPUT SECTION ----------
+
 with st.container():
     st.subheader("📝 Your Details")
 
@@ -29,10 +28,9 @@ with st.container():
 
     image = st.file_uploader("Upload Profile Image (optional)", type=["png", "jpg", "jpeg"])
 
-# ---------- CREATE BUTTON ----------
 create = st.button("🚀 Create Profile")
 
-# ---------- OUTPUT ----------
+
 if create:
 
     if not name.strip():
@@ -42,7 +40,7 @@ if create:
 
         st.divider()
 
-        # ---------- PROFILE CARD ----------
+  
         col1, col2 = st.columns([1, 2])
 
         with col1:
@@ -58,7 +56,7 @@ if create:
 
         st.divider()
 
-        # ---------- INSIGHT ----------
+      
         message = (
             "🧒 Focus on learning" if age < 18 else
             "💪 Perfect age to build your future" if age < 30 else
@@ -67,7 +65,6 @@ if create:
 
         st.info(message)
 
-        # ---------- EFFECT ----------
         st.snow()
         
         
