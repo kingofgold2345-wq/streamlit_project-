@@ -9,7 +9,7 @@ Original file is located at
 
 import streamlit as st
 import joblib as jb
-import pandas as pd
+import pandas as np
 
 model = jb.load("titanic_project.pkl")
 
