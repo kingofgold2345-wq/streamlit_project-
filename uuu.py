@@ -26,7 +26,6 @@ embarked = st.selectbox("Embarked", ["S", "C", "Q"])
 age = st.number_input("Enter Age", min_value=0.0, max_value=100.0, value=0.0)
 
 
-
 if st.button("Predict Survival 🔍"):
     input_dict = {
         "Pclass": [pclass],
@@ -41,19 +40,19 @@ if st.button("Predict Survival 🔍"):
     input_df = pd.DataFrame(input_dict)
 
     input_df["Sex"] = input_df["Sex"].replace({"male": 0, "female": 1})
-input_df["Embarked"] = input_df["Embarked"].replace({"S": 0, "C": 1, "Q": 2})
+    input_df["Embarked"] = input_df["Embarked"].replace({"S": 0, "C": 1, "Q": 2})
 
-model_cols = model.feature_name_in_
+    model_cols = model.feature_name_in_
 
-for col in model_cols:
-    if col not in input_df.columns:
-        input_df[col] = 0
+    for col in model_cols:
+        if col not in input_df.columns:
+            input_df[col] = 0
 
-input_df = input_df[model_cols]
+    input_df = input_df[model_cols]
 
-prediction = model.predict(input_df)
+    prediction = model.predict(input_df)
 
-if prediction[0] == 1:
-    st.success("Passenger Survived ✅")
-else:
-    st.error("Passenger Not Survived ❌")
+    if prediction[0] == 1:
+        st.success("Passenger Survived ✅")
+    else:
+        st.error("Passenger Not Survived ❌")
