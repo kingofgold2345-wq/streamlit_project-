@@ -8,10 +8,11 @@ Original file is located at
 """
 
 import streamlit as st
-import joblib as jb
-import pandas as np
+import joblib 
+import pandas as pd
+import numpy as np
 
-model = jb.load("titanic_project.pkl")
+model = joblib.load("titanic_project.pkl")
 
 st.title("🚢 Titanic Survival Prediction 🚢")
 st.write("Enter the Passenger Data for survival prediction")
